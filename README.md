@@ -23,11 +23,9 @@ The plugin is intended to be used in a CI/CD environment and is installed there 
 $ composer global require "sitepark/composer-project" --dev
 ```
 
-Kann auch auf den Entwicklungs-Rechnern installiert werden
-
 ## Usage
 
-Nach dem `composer-git-flow` so installiert ist stehen im globalen composer nun folgende Befehle zur verfügung:
+After `composer-project` is installed, the following commands are available in the global composer:
 
 * `composer project:version` - Outputs the current version of the Git branch
 * `composer project:releaseVersion` - Outputs the next release version of the current Git branch. Here to the version of the last release of the Git branch is determined and for the branches `main` and `support/[MAJOR].x` the minor version is incremented by one. For branches of the form `hotfix/[MAJOR].[MINOR].x` the patch level is incremented by one.
