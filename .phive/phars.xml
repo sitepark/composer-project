@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phive xmlns="https://phar.io/phive">
+  <phar name="composer-normalize" version="^2.15.0" installed="2.30.2" location="./bin/composer-normalize" copy="false"/>
+  <phar name="phpunit" version="^10.0" installed="10.1.2" location="./bin/phpunit" copy="false"/>
+  <phar name="phpstan" version="^1.0" installed="1.10.12" location="./bin/phpstan" copy="false"/>
+  <phar name="captainhook" version="^5.10.7" installed="5.16.3" location="./bin/captainhook" copy="false"/>
+</phive>

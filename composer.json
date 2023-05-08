@@ -1,0 +1,75 @@
+{
+	"name": "sitepark/composer-project",
+	"type": "composer-plugin",
+	"description": "Tools to manage composer projects",
+	"minimum-stability": "stable",
+	"prefer-stable": true,
+	"license": "MIT",
+	"require-dev": {
+		"roave/security-advisories": "dev-latest",
+		"phpstan/phpstan": "^1.10",
+		"phpunit/phpunit": "^10",
+		"composer/composer": "^2.5",
+		"overtrue/phplint": "^9",
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+		"squizlabs/php_codesniffer": "^3.4"
+	},
+	"require": {
+		"composer-plugin-api": "^2.0",
+		"php": ">=8.0 <8.3",
+		"ext-json": "*",
+	 	"symfony/console": "^6.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"SP\\Composer\\Project\\": "src/SP/Composer/Project"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"SP\\Composer\\Project\\": "test/SP/Composer/Project"
+		}
+	},
+	"extra": {
+		"class": "SP\\Composer\\Project\\Plugin\\Plugin",
+		"branch-alias": {
+			"dev-develop": "1.x-dev"
+		}
+	},
+	"scripts": {
+		"post-install-cmd": "phive --no-progress install --trust-gpg-keys C00543248C87FB13,4AA394086372C20A,51C67305FFC2E5C0,661E97400F658E25",
+                "post-autoload-dump": "if [ -f \"bin/captainhook\" ]; then bin/captainhook install -f; fi",
+
+		"phpstan": "bin/phpstan analyse",
+		"phpcs": "vendor/bin/phpcs",
+		"phplint": "vendor/bin/phplint",
+		"phpunit": "bin/phpunit  -c phpunit.xml",
+
+		"test": [
+			"@phpunit"
+		],
+		"analyse": [
+			"@phplint",
+			"@phpstan",
+			"@phpcs"
+		]
+	},
+	"authors": [
+		{
+			"name": "Holger Veltrup",
+			"email": "veltrup@sitepark.com"
+		},
+		{
+			"name": "René Schleusner",
+			"email": "schleusner@sitepark.com"
+		}
+	],
+	"support": {
+		"source": "https://github.com/sitepark/composer-project/"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
+	}
+}
