@@ -8,7 +8,7 @@ Features:
 * Create a hotfix branch from a released version.
 * Create a release
 
-`composer-project` supports the following baches
+`composer-project` supports the following branches
 
 * `main`
 * `support/[MAJOR].x`
