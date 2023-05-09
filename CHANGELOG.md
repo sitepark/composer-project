@@ -1,1 +1,1 @@
-See [Releases](./releases)
+See [Releases](../../releases)
