@@ -38,7 +38,7 @@
 	},
 	"scripts": {
 		"post-install-cmd": "phive --no-progress install --trust-gpg-keys C00543248C87FB13,4AA394086372C20A,51C67305FFC2E5C0,661E97400F658E25",
-                "post-autoload-dump": "if [ -f \"bin/captainhook\" ]; then bin/captainhook install -f; fi",
+    "post-autoload-dump": "if [ -f \"bin/captainhook\" ]; then bin/captainhook install -f; fi",
 
 		"phpstan": "bin/phpstan analyse",
 		"phpcs": "vendor/bin/phpcs",
