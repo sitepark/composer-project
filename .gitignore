@@ -3,7 +3,7 @@
 /target/
 
 .idea
-.cache/
+.cache/*
 !.cache/.gitkeep
 
 .project
