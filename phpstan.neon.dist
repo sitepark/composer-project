@@ -1,4 +1,10 @@
 parameters:
-	level: 7
+	level: 6
+	tmpDir: var/cache/phpstan
 	paths:
 		- src
+		- tests
+	bootstrapFiles:
+		- %currentWorkingDirectory%/tools/phpunit.phar
+		- %currentWorkingDirectory%/vendor/autoload.php
+

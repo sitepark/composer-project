@@ -1,6 +1,8 @@
-path: ./src
+path: ./
 jobs: 10
-cache: .cache/phplint.cache
+cache: var/cache/phplint
 extensions:
   - php
+exclude:
+  - vendor
 warning: false

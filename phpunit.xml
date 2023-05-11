@@ -1,23 +1,27 @@
 <?xml version="1.0"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd"
-	bootstrap="vendor/autoload.php"
-	cacheResultFile=".cache/.phpunit.result.cache"
-	colors="true">
-  <coverage cacheDirectory=".cache/.phpunit.coverage.cache">
+	cacheResultFile="var/cache/phpunit.result.cache"
+	colors="true"
+	executionOrder="random"
+	bootstrap="vendor/autoload.php">
+  <coverage cacheDirectory="var/cache/phpunit.coverage.cache">
     <report>
-      <clover outputFile="target/clover/clover.xml"/>
-      <html outputDirectory="target/clover"/>
+	    <html outputDirectory="var/log/clover"/>
+	    <clover outputFile="var/log/clover/clover.xml"/>
     </report>
   </coverage>
-  <testsuite name="unit">
-    <directory>test/SP</directory>
+  <testsuite name="test">
+    <directory>tests</directory>
   </testsuite>
   <logging>
-    <junit outputFile="target/surefire-reports/surefire-report.xml"/>
+    <junit outputFile="var/log/junit.xml"/>
   </logging>
+  <php>
+    <server name="APP_ENV" value="test"/>
+  </php>
   <source>
     <include>
-      <directory>src/SP</directory>
+      <directory>src</directory>
     </include>
   </source>
 </phpunit>

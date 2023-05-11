@@ -1,100 +1,25 @@
 {
-	"commit-msg": {
-		"enabled": true,
-		"actions": []
-	},
-	"pre-push": {
-		"enabled": false,
-		"actions": []
-	},
-	"pre-commit": {
-		"enabled": true,
-		"actions": [
-			{
-				"action": "vendor/bin/phplint",
-				"options": [],
-				"conditions": [
-					{
-						"exec": "\\CaptainHook\\App\\Hook\\Condition\\FileStaged\\OfType",
-						"args": [
-							"php"
-						]
-					}
-				]
-			},
-			{
-				"action": "bin/phpunit -c ./phpunit.xml --no-coverage",
-				"options": [],
-				"conditions": [
-					{
-						"exec": "and",
-						"args": [
-							{
-								"exec": "\\CaptainHook\\App\\Hook\\Condition\\OnBranch",
-								"args": [
-									"develop"
-								]
-							},
-							{
-								"exec": "\\CaptainHook\\App\\Hook\\Condition\\FileStaged\\OfType",
-								"args": [
-									"php", "composer.json", "composer.lock"
-								]
-							}
-						]
-					}
-				]
-			},
-			{
-				"action": "vendor/bin/phpcs --runtime-set ignore_errors_on_exit 0 --filter=GitStaged",
-				"options": [],
-				"conditions": [
-					{
-						"exec": "and",
-						"args": [
-							{
-								"exec": "\\CaptainHook\\App\\Hook\\Condition\\OnBranch",
-								"args": [
-									"develop"
-								]
-							},
-							{
-								"exec": "\\CaptainHook\\App\\Hook\\Condition\\FileStaged\\OfType",
-								"args": [
-									"php"
-								]
-							}
-						]
-					}
-				]
-			},
-			{
-				"action": "bin/phpstan --no-progress --no-ansi --no-interaction",
-				"options": [],
-				"conditions": [
-					{
-						"exec": "and",
-						"args": [
-							{
-								"exec": "\\CaptainHook\\App\\Hook\\Condition\\OnBranch",
-								"args": [
-									"develop"
-								]
-							},
-							{
-								"exec": "\\CaptainHook\\App\\Hook\\Condition\\FileStaged\\OfType",
-								"args": [
-									"php"
-								]
-							}
-						]
-					}
-				]
-			}
-		]
-	},
-	"prepare-commit-msg": {
-		"enabled": false,
-		"actions": []
-	}
+  "commit-msg": {
+    "enabled": true,
+    "actions": [
+      {
+        "action": "\\CaptainHook\\App\\Hook\\Message\\Action\\Regex",
+        "options": {
+          "regex": "#^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test){1}(\\([\\w\\-\\.]+\\))?(!)?: ([\\w ])+([\\s\\S]*)\n#"
+        }
+      }
+    ]
+  },
+  "pre-push": {
+    "enabled": false,
+    "actions": []
+  },
+  "pre-commit": {
+    "enabled": false,
+    "actions": []
+  },
+  "prepare-commit-msg": {
+    "enabled": false,
+    "actions": []
+  }
 }

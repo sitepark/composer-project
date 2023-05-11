@@ -1,11 +1,16 @@
-/bin/
-/vendor/
-/target/
+tools/
+vendor/
+var/*
+!var/.gitkeep
+composer.lock
 
-.idea
-.cache/*
-!.cache/.gitkeep
+#phpstorm
+.idea/
 
+#eclipse
+.buildpath
 .project
 .settings
-.buildpath
+
+#vscode
+.vscode/
