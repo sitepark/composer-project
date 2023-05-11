@@ -40,7 +40,7 @@ class ReleaseManagement
     public function assertNoUncommitedChanges(string $msg): void
     {
         if ($this->hasUncommitedChanges()) {
-            $this->exec('git status --porcelain');
+            $this->exec('git status --porcelain --untracked-files no');
             throw new \RuntimeException($msg);
         }
     }
