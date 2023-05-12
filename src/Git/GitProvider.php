@@ -19,4 +19,6 @@ interface GitProvider
     public function getVersions(): array;
 
     public function isDev(): bool;
+
+    public function isRelease(): bool;
 }

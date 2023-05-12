@@ -56,4 +56,10 @@ class StandardGitProvider implements GitProvider
         $version = exec('git tag -l --points-at HEAD');
         return empty($version);
     }
+
+    public function isRelease(): bool
+    {
+        $version = exec('git tag -l --points-at HEAD');
+        return !empty($version);
+    }
 }

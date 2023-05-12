@@ -225,6 +225,11 @@ class Project
         return $this->gitProvider->isDev();
     }
 
+    public function isRelease(): bool
+    {
+        return $this->gitProvider->isRelease();
+    }
+
     /**
      * @param string[] $excludes
      * @return string[]

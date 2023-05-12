@@ -47,11 +47,11 @@ class ReleaseManagement
 
     public function startHotfix(): string
     {
-        if (
-            !$this->project->isMainBranch()
-            && !$this->project->isSupportBranch()
-        ) {
-            throw new \RuntimeException("Can't start hotfix or branch: " . $this->project->getBranch());
+        if (!$this->project->isRelease()) {
+            throw new \RuntimeException(
+                "A hotfix can only be created on the basis of a release. " +
+                "The current Git state is not a checked out tag. Current Branch: " .
+                $this->project->getBranch());
         }
         $releaseVersion = $this->project->getLatestRelease();
         if ($releaseVersion === null) {
