@@ -61,8 +61,10 @@ class ReleaseManagement
         if ($hotfixVersion === null) {
             throw new \RuntimeException('Hotfix version could not be determined.');
         }
-        $this->exec('git checkout -b hotfix/' . $hotfixVersion . ' ' . $releaseVersion);
-        $this->exec('git push origin hotfix/' . $hotfixVersion);
+        [$major, $minor] = explode('.', $hotfixVersion);
+        $hotfixBranch = 'hotfix/' . $major . '.' . $minor . '.x';
+        $this->exec('git checkout -b ' . $hotfixBranch . ' ' . $releaseVersion);
+        $this->exec('git push origin ' . $hotfixBranch);
 
         return $hotfixVersion;
     }
