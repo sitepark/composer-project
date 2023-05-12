@@ -27,7 +27,7 @@ class ReleaseManagement
 
     public function hasUncommitedChanges(): bool
     {
-        $result = exec('git status --short');
+        $result = exec('git status --short --untracked-files no');
         return !empty($result);
     }
 
