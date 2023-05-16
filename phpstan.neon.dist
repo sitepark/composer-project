@@ -6,5 +6,4 @@ parameters:
 		- tests
 	bootstrapFiles:
 		- %currentWorkingDirectory%/tools/phpunit.phar
-		- %currentWorkingDirectory%/vendor/autoload.php
 

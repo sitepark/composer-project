@@ -49,9 +49,10 @@ class ReleaseManagement
     {
         if (!$this->project->isRelease()) {
             throw new \RuntimeException(
-                "A hotfix can only be created on the basis of a release. " +
+                "A hotfix can only be created on the basis of a release. " .
                 "The current Git state is not a checked out tag. Current Branch: " .
-                $this->project->getBranch());
+                $this->project->getBranch()
+            );
         }
         $releaseVersion = $this->project->getLatestRelease();
         if ($releaseVersion === null) {

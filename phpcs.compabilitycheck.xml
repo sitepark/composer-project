@@ -14,7 +14,5 @@
 	<file>src/</file>
 	<file>tests/</file>
 
-	<bootstrap>vendor/autoload.php</bootstrap>
-
-	<rule ref="PSR12"/>
+	<rule ref="PHPCompatibility"/>
 </ruleset>
