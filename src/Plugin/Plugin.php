@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SP\Composer\Project\Plugin;
 
 use Composer\Composer;

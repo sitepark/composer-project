@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SP\Composer\Project;
 
 use Composer\Package\RootPackageInterface;
@@ -24,11 +26,6 @@ class Project
         $this->gitProvider = $gitProvider;
         $this->package = $package;
         $this->load();
-    }
-
-    public function setGitProvider(GitProvider $provider): void
-    {
-        $this->gitProvider = $provider;
     }
 
     private function load(): void
@@ -65,12 +62,6 @@ class Project
         return in_array($name, $this->getBranches(), true);
     }
 
-    public function switchBranch(string $name): void
-    {
-        exec('git checkout ' . $name);
-        $this->load();
-    }
-
     public function getVendor(): string
     {
         return $this->vendor;
@@ -90,10 +81,10 @@ class Project
         if (strpos($this->branch, $supportBranchPrefix) !== false) {
             $baseVersion = substr($this->branch, strlen($supportBranchPrefix));
             $baseVersion = substr($baseVersion, 0, strlen($baseVersion) - 2);
-            return $this->getNextSupportVersion($baseVersion);
+            return $this->getNextSupportVersion();
         }
         if (strpos($this->branch, $hotfixBranchPrefix) !== false) {
-            return substr($this->branch, strlen($hotfixBranchPrefix));
+            return $this->getNextHotfixVersion();
         }
 
         return $this->getNextReleaseVersion();
@@ -101,26 +92,19 @@ class Project
 
     public function getVersion(): string
     {
-        $version = null;
-        if ($this->isSupportBranch()) {
-            $baseVersion = substr($this->branch, strlen('support/'));
-            $baseVersion = substr($baseVersion, 0, strlen($baseVersion) - 2);
-            if ($this->isDev()) {
-                $version = $this->getNextSupportVersion($baseVersion);
-            } else {
-                $version = $this->getLatestSupport($baseVersion);
-            }
-        } elseif ($this->isHotfixBranch()) {
-            $version = substr($this->branch, strlen('hotfix/'));
-        } else {
-            if ($this->isDev()) {
-                $version = $this->getNextReleaseVersion();
-            } else {
-                $version = $this->getLatestRelease();
-            }
+        if ($this->isSupportBranch() && $this->isDev()) {
+            return $this->getNextSupportVersion();
         }
 
-        return $version;
+        if ($this->isHotfixBranch() && $this->isDev()) {
+            return $this->getNextHotfixVersion();
+        }
+
+        if ($this->isDev()) {
+            return $this->getNextReleaseVersion();
+        }
+
+        return $this->getLatestRelease();
     }
 
     public function isMainBranch(): bool
@@ -139,7 +123,7 @@ class Project
     }
 
     /**
-     * Qualifier kann Feature-Branch-Name und/oder SNAPSHOT sein.
+     * Qualifier can be Feature-Branch-Name and/or SNAPSHOT.
      */
     public function getVersionQualifier(): ?string
     {
@@ -191,35 +175,6 @@ class Project
         return $versions[count($versions) - 1];
     }
 
-    /**
-     * Liefert die letzte Support-Version für die
-     * übergebene Basis-Version (z.B. 1.3.x)
-     *
-     * Die entsprechende Version wird anhand von Git-Tags
-     * ermittelt.
-     */
-    public function getLatestSupport(string $baseVersion): ?string
-    {
-        return $this->getLatestHotfix($baseVersion);
-    }
-
-    public function getLatestHotfix(string $baseVersion): ?string
-    {
-        $versions = $this->getVersions();
-        if (empty($versions)) {
-            return null;
-        }
-
-        $hotfixVersion = null;
-        foreach ($versions as $v) {
-            if ($v === $baseVersion || strpos($v, $baseVersion . '.') === 0) {
-                $hotfixVersion = $v;
-            }
-        }
-
-        return $hotfixVersion;
-    }
-
     public function isDev(): bool
     {
         return $this->gitProvider->isDev();
@@ -237,7 +192,7 @@ class Project
     public function getUnstableDependencies(array $excludes = []): array
     {
 
-        // TODO: Auch Einträge aus der Lock-Datei überprüfen
+        // TODO: Also check entries from the lock file?
         // composer show --locked -D -f json
 
         /* @var $allRequires \Composer\Package\Link[] */
@@ -265,9 +220,9 @@ class Project
         }
         $version = $this->incrementMinorLevel($version);
 
-        // Sollte die Branch-Alias-Version größer als die Version die
-        // basierend auf Git-Tags ermittelt wurde, wird diese genommen.
-        // Dies ist z.B. bei Release von Major-Versionen nötig.
+        // If the branch alias version is greater than the version that was
+        // determined based on Git tags, it will be taken.
+        // This is necessary e.g. when releasing major versions.
         $branchAliasVersion = $this->getBranchAliasVersion('dev-' . $this->branch);
         if ($branchAliasVersion !== null && Comparator::greaterThan($branchAliasVersion, $version)) {
             $version = $branchAliasVersion;
@@ -276,9 +231,9 @@ class Project
     }
 
     /**
-     * Ermittelt die Basis-Version des übergebenen Branch-Aliases
-     * z.B. dev-1.x => 1.0
-     * Sollte kein Branch Alias existrieren wird null zurückgeliefert
+     * Determines the base version of the branch alias passed.
+     * e.g. dev-1.x => 1.0
+     * If no branch alias exists null is returned
      */
     private function getBranchAliasVersion(string $alias): ?string
     {
@@ -297,8 +252,8 @@ class Project
     }
 
     /**
-     * Ermittelt die Alias-Version des übergebenen Alias-Namen.
-     * Liefert null zurück falls der Alias nicht bekannt ist.
+     * Get the alias version of the given alias name.
+     * Returns zero if the alias is not known.
      */
     private function getBranchAlias(string $aliasName): ?string
     {
@@ -314,18 +269,13 @@ class Project
         return $this->incrementPatchLevel($version);
     }
 
-    public function getNextSupportVersion(string $baseVersion): ?string
+    public function getNextSupportVersion(): ?string
     {
-        $isSupportForMinor = !empty(preg_match("/^\d$/", $baseVersion));
-        $isSupportForPatch = !empty(preg_match("/^\d\.\d$/", $baseVersion));
-
-        $version = $this->getLatestSupport($baseVersion);
-        if ($isSupportForPatch) {
-            return $this->incrementPatchLevel($version);
-        } elseif ($isSupportForMinor) {
-            return $this->incrementMinorLevel($version);
+        $version = $this->getLatestRelease();
+        if ($version === null) {
+            return null;
         }
-        throw new \RuntimeException("Unsupported Support Version $baseVersion");
+        return $this->incrementMinorLevel($version);
     }
 
     private function incrementMinorLevel(?string $version): ?string
@@ -338,7 +288,7 @@ class Project
         if (count($s) < 2) {
             $s[] = '0';
         }
-        return $s[0] . '.' . (intval($s[1]) + 1) . '.0';
+        return $s[0] . '.' . ((int)$s[1] + 1) . '.0';
     }
 
     private function incrementPatchLevel(?string $version): ?string
@@ -355,7 +305,7 @@ class Project
         if (count($s) < 3) {
             $s[] = '0';
         }
-        $s[2] = intval($s[2]) + 1;
+        $s[2] = (int)$s[2] + 1;
         return implode('.', $s);
     }
 }

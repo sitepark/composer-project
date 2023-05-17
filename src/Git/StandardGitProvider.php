@@ -1,15 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SP\Composer\Project\Git;
 
 class StandardGitProvider implements GitProvider
 {
+    private Executor $executor;
+
+    public function __construct(Executor $executor)
+    {
+        $this->executor = $executor;
+    }
+
     /**
      * @return string
      */
     public function getCurrentBranch(): string
     {
-        return (string) exec('git rev-parse --abbrev-ref HEAD');
+        $branch = $this->executor->exec('git rev-parse --abbrev-ref HEAD');
+        if (empty($branch)) {
+            return '';
+        }
+        return $branch[0];
     }
 
     /**
@@ -17,9 +30,7 @@ class StandardGitProvider implements GitProvider
      */
     public function getBranches(): array
     {
-        $branches = [];
-        exec("git for-each-ref --format='%(refname:short)' refs/heads/*", $branches);
-        return $branches;
+        return $this->executor->exec("git for-each-ref --format='%(refname:short)' refs/heads/**");
     }
 
     /**
@@ -32,7 +43,7 @@ class StandardGitProvider implements GitProvider
          * Damit wird sichergestellt, dass beim ermitteln der nächsten Hotfix-Version
          * alle nötigen Informationen im lokalen Repository vorhanden sind.
          */
-        exec('git fetch --tags');
+        $this->executor->exec('git fetch --tags');
     }
 
     /**
@@ -41,25 +52,24 @@ class StandardGitProvider implements GitProvider
     public function getVersions(): array
     {
         $this->updateTags();
-        $versions = [];
         // Wenn HEAD auf einen TAG zeigt
-        exec('git tag -l --points-at HEAD', $versions);
+        $versions = $this->executor->exec('git tag -l --points-at HEAD');
         if (empty($versions)) {
             // Wenn HEAD develop ist
-            exec('git --no-pager tag --sort=v:refname', $versions);
+            $versions = $this->executor->exec('git --no-pager tag --sort=v:refname');
         }
         return $versions;
     }
 
     public function isDev(): bool
     {
-        $version = exec('git tag -l --points-at HEAD');
+        $version = $this->executor->exec('git tag -l --points-at HEAD');
         return empty($version);
     }
 
     public function isRelease(): bool
     {
-        $version = exec('git tag -l --points-at HEAD');
+        $version = $this->executor->exec('git tag -l --points-at HEAD');
         return !empty($version);
     }
 }

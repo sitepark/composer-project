@@ -1,17 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SP\Composer\Project;
+
+use SP\Composer\Project\Git\Executor;
 
 class ReleaseManagement
 {
-    /**
-     * @var Project
-     */
-    private $project;
+    private Project $project;
 
-    public function __construct(Project $project)
+    private Executor $executor;
+
+    public function __construct(Project $project, Executor $executor)
     {
         $this->project = $project;
+        $this->executor = $executor;
     }
 
     public function verifyRelease(): void
@@ -25,9 +29,9 @@ class ReleaseManagement
         }
     }
 
-    public function hasUncommitedChanges(): bool
+    public function hasUncommittedChanges(): bool
     {
-        $result = exec('git status --short --untracked-files no');
+        $result = $this->executor->exec('git status --short --untracked-files=no');
         return !empty($result);
     }
 
@@ -37,10 +41,10 @@ class ReleaseManagement
      *
      *  @param string $msg Message of the Exception that may be thrown
      */
-    public function assertNoUncommitedChanges(string $msg): void
+    public function assertNoUncommittedChanges(string $msg): void
     {
-        if ($this->hasUncommitedChanges()) {
-            $this->exec('git status --porcelain --untracked-files no');
+        if ($this->hasUncommittedChanges()) {
+            $this->executor->exec('git status --porcelain --untracked-files=no');
             throw new \RuntimeException($msg);
         }
     }
@@ -64,8 +68,8 @@ class ReleaseManagement
         }
         [$major, $minor] = explode('.', $hotfixVersion);
         $hotfixBranch = 'hotfix/' . $major . '.' . $minor . '.x';
-        $this->exec('git checkout -b ' . $hotfixBranch . ' ' . $releaseVersion);
-        $this->exec('git push origin ' . $hotfixBranch);
+        $this->executor->exec('git checkout -b ' . $hotfixBranch . ' ' . $releaseVersion);
+        $this->executor->exec('git push origin ' . $hotfixBranch);
 
         return $hotfixVersion;
     }
@@ -87,24 +91,11 @@ class ReleaseManagement
             $releaseVersion = $this->project->getNextReleaseVersion();
         }
 
-        $this->assertNoUncommitedChanges('The release can only be created when all changes are committed.');
+        $this->assertNoUncommittedChanges('The release can only be created when all changes are committed.');
 
-        $this->exec('git tag -a ' . $releaseVersion . " -m 'Release Version " . $releaseVersion . "'");
-        $this->exec('git push origin ' . $releaseVersion);
+        $this->executor->exec('git tag -a ' . $releaseVersion . " -m 'Release Version " . $releaseVersion . "'");
+        $this->executor->exec('git push origin ' . $releaseVersion);
 
         return $releaseVersion;
-    }
-
-    private function exec(string $cmd): void
-    {
-        $output = [ ];
-        $exitCode = 0;
-        echo $cmd . "\n";
-
-        exec($cmd, $output, $exitCode);
-        if ($exitCode !== 0) {
-            throw new \RuntimeException('exec failed with exit-code: ' . $exitCode . "\n" . implode("\n", $output));
-        }
-        echo implode("\n", $output) . "\n";
     }
 }
