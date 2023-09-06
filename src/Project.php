@@ -174,6 +174,15 @@ class Project
         return $versions[count($versions) - 1];
     }
 
+    public function getLatestReleaseFromMinor(int $major, int $minor): ?string
+    {
+        $versions = $this->getVersionsFromMinor($major, $minor);
+        if (empty($versions)) {
+            return null;
+        }
+        return $versions[count($versions) - 1];
+    }
+
     public function isDev(): bool
     {
         return $this->gitProvider->isDev();
@@ -214,8 +223,12 @@ class Project
     public function getLatestReleaseVersion(): ?string
     {
         if ($this->isSupportBranch() || $this->isHotfixBranch()) {
-            $major = $this->parseMajorVersionFromBranch($this->getBranch());
-            return $this->getLatestReleaseFromMajor($major);
+            [$major]= $this->parseVersionFromBranch($this->getBranch());
+            return $this->getLatestReleaseFromMajor((int)$major);
+        }
+        if ($this->isSupportBranch() || $this->isHotfixBranch()) {
+            [$major, $minor]= $this->parseVersionFromBranch($this->getBranch());
+            return $this->getLatestReleaseFromMinor((int)$major, (int)$minor);
         }
 
         return $this->getLatestMainRelease();
@@ -223,13 +236,13 @@ class Project
     public function getNextReleaseVersion(): string
     {
         if ($this->isSupportBranch()) {
-            $major = $this->parseMajorVersionFromBranch($this->getBranch());
-            $version = $this->getLatestReleaseFromMajor($major);
+            [$major] = $this->parseVersionFromBranch($this->getBranch());
+            $version = $this->getLatestReleaseFromMajor((int)$major);
             return $this->incrementMinorLevel($version);
         }
         if ($this->isHotfixBranch()) {
-            $major = $this->parseMajorVersionFromBranch($this->getBranch());
-            $version = $this->getLatestReleaseFromMajor($major);
+            [$major, $minor] = $this->parseVersionFromBranch($this->getBranch());
+            $version = $this->getLatestReleaseFromMinor((int)$major, (int)$minor);
             return $this->incrementPatchLevel($version);
         }
 
@@ -249,14 +262,15 @@ class Project
         return $version;
     }
 
-    private function parseMajorVersionFromBranch(string $branch): int
+    /**
+     * @param string $branch
+     * @return string[]
+     */
+    private function parseVersionFromBranch(string $branch): array
     {
         $slashPos = strpos($branch, '/');
-        $firstDotPos = strpos($branch, '.', $slashPos);
-
-        $major = substr($branch, $slashPos + 1, $firstDotPos - $slashPos - 1);
-
-        return (int)$major;
+        $version = substr($branch, $slashPos + 1);
+        return explode('.', $version);
     }
 
     /**
