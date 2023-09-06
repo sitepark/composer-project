@@ -132,7 +132,7 @@ class ReleaseManagementTest extends TestCase
         $executor = new Executor(self::GIT_BASE);
         $project = $this->createStub(Project::class);
         $project->method('isRelease')->willReturn(true);
-        $project->method('getVersionsFromMajor')->willReturn(['1.0.0', '1.1.0']);
+        $project->method('getVersionsFromMinor')->willReturn(['1.1.0']);
         $releaseManagement = new ReleaseManagement($project, $executor);
 
         $executor->exec('git checkout 1.1.0');

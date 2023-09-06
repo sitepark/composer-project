@@ -200,7 +200,7 @@ class ProjectTest extends TestCase
 
         $git = $this->getMockBuilder(GitProvider::class)->getMock();
         $git->method('getCurrentBranch')->willReturn('hotfix/1.1.x');
-        $git->method('getVersionsFromMajor')->willReturn([
+        $git->method('getVersionsFromMinor')->willReturn([
             '1.1.0',
             '1.1.1',
             '1.1.2'
