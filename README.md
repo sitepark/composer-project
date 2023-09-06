@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/sitepark/composer-project/branch/main/graph/badge.svg?token=68Mk5j1BY3)](https://codecov.io/gh/sitepark/composer-project)
+
 `composer-project` is a composer plugin for managing a project workflow based on this [Branching model](https://sitepark.github.io/github-project-workflow/branching-model.html)
 
 Features:
