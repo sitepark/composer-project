@@ -35,7 +35,8 @@ class StartHotfixCommandTest extends TestCase
         $commandTester = new CommandTester($command);
 
         $success = $commandTester->execute([
-            'command' => 'project:startHotfix'
+            'command' => 'project:startHotfix',
+            'tag' => '1.0.0'
         ]);
 
         $this->assertEquals(0, $success);
