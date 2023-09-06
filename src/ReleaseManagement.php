@@ -49,7 +49,7 @@ class ReleaseManagement
         }
     }
 
-    public function startHotfix(): string
+    public function startHotfix(string $tag): string
     {
         if (!$this->project->isRelease()) {
             throw new \RuntimeException(
@@ -58,17 +58,23 @@ class ReleaseManagement
                 $this->project->getBranch()
             );
         }
-        $releaseVersion = $this->project->getLatestMainRelease();
-        if ($releaseVersion === null) {
+        [$major] = explode('.', $tag);
+
+        $releaseVersions = $this->project->getVersionsFromMajor((int)$major);
+        if (empty($releaseVersions)) {
             throw new \RuntimeException('There is no release yet for which a hotfix can be created.');
         }
-        $hotfixVersion = $this->project->getNextReleaseVersion();
-        [$major, $minor] = explode('.', $hotfixVersion);
+
+        $lastReleaseVersion = $releaseVersions[count($releaseVersions) - 1];
+
+        [$major, $minor] = explode('.', $lastReleaseVersion);
         $hotfixBranch = 'hotfix/' . $major . '.' . $minor . '.x';
-        $this->executor->exec('git checkout -b ' . $hotfixBranch . ' ' . $releaseVersion);
+        $this->executor->exec('git checkout -b ' . $hotfixBranch . ' ' . $lastReleaseVersion);
         $this->executor->exec('git push origin ' . $hotfixBranch);
 
-        return $hotfixVersion;
+        [$major, $minor, $path] = explode('.', $lastReleaseVersion);
+
+        return $major . '.' . $minor . '.' . ((int)$path + 1) ;
     }
 
     public function release(): string
