@@ -64,6 +64,15 @@ class StandardGitProvider implements GitProvider
         return $this->executor->exec('git tag -l --sort=v:refname \'' . $major . '.[0-9]*.[0-9]*\'');
     }
 
+    /**
+     * @return string[]
+     */
+    public function getVersionsFromMinor(int $major, int $minor): array
+    {
+        $this->updateTags();
+        return $this->executor->exec('git tag -l --sort=v:refname \'' . $major . '.' . $minor . '.[0-9]*\'');
+    }
+
     public function isDev(): bool
     {
         $version = $this->executor->exec('git tag -l --points-at HEAD');

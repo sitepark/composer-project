@@ -58,23 +58,22 @@ class ReleaseManagement
                 $this->project->getBranch()
             );
         }
-        [$major] = explode('.', $tag);
+        [$major, $minor] = explode('.', $tag);
 
-        $releaseVersions = $this->project->getVersionsFromMajor((int)$major);
+        $releaseVersions = $this->project->getVersionsFromMinor((int)$major, (int)$minor);
         if (empty($releaseVersions)) {
             throw new \RuntimeException('There is no release yet for which a hotfix can be created.');
         }
 
         $lastReleaseVersion = $releaseVersions[count($releaseVersions) - 1];
 
-        [$major, $minor] = explode('.', $lastReleaseVersion);
         $hotfixBranch = 'hotfix/' . $major . '.' . $minor . '.x';
         $this->executor->exec('git checkout -b ' . $hotfixBranch . ' ' . $lastReleaseVersion);
         $this->executor->exec('git push origin ' . $hotfixBranch);
 
-        [$major, $minor, $path] = explode('.', $lastReleaseVersion);
+        [$major, $minor, $patch] = explode('.', $lastReleaseVersion);
 
-        return $major . '.' . $minor . '.' . ((int)$path + 1) ;
+        return $major . '.' . $minor . '.' . ((int)$patch + 1) ;
     }
 
     public function release(): string
