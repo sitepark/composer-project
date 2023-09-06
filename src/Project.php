@@ -72,39 +72,13 @@ class Project
         return $this->name;
     }
 
-    public function getReleaseVersion(): string
-    {
-
-        $supportBranchPrefix = 'support/';
-        $hotfixBranchPrefix = 'hotfix/';
-
-        if (strpos($this->branch, $supportBranchPrefix) !== false) {
-            $baseVersion = substr($this->branch, strlen($supportBranchPrefix));
-            $baseVersion = substr($baseVersion, 0, strlen($baseVersion) - 2);
-            return $this->getNextSupportVersion();
-        }
-        if (strpos($this->branch, $hotfixBranchPrefix) !== false) {
-            return $this->getNextHotfixVersion();
-        }
-
-        return $this->getNextReleaseVersion();
-    }
-
     public function getVersion(): string
     {
-        if ($this->isSupportBranch() && $this->isDev()) {
-            return $this->getNextSupportVersion();
-        }
-
-        if ($this->isHotfixBranch() && $this->isDev()) {
-            return $this->getNextHotfixVersion();
-        }
-
         if ($this->isDev()) {
             return $this->getNextReleaseVersion();
         }
 
-        return $this->getLatestRelease();
+        return $this->getLatestMainRelease();
     }
 
     public function isMainBranch(): bool
@@ -166,9 +140,26 @@ class Project
         return $this->gitProvider->getVersions();
     }
 
-    public function getLatestRelease(): ?string
+    /**
+     * @return string[]
+     */
+    public function getVersionsFromMajor(int $major): array
+    {
+        return $this->gitProvider->getVersionsFromMajor($major);
+    }
+
+    public function getLatestMainRelease(): ?string
     {
         $versions = $this->getVersions();
+        if (empty($versions)) {
+            return null;
+        }
+        return $versions[count($versions) - 1];
+    }
+
+    public function getLatestReleaseFromMajor(int $major): ?string
+    {
+        $versions = $this->getVersionsFromMajor($major);
         if (empty($versions)) {
             return null;
         }
@@ -212,9 +203,29 @@ class Project
         return $unstable;
     }
 
+    public function getLatestReleaseVersion(): ?string
+    {
+        if ($this->isSupportBranch() || $this->isHotfixBranch()) {
+            $major = $this->parseMajorVersionFromBranch($this->getBranch());
+            return $this->getLatestReleaseFromMajor($major);
+        }
+
+        return $this->getLatestMainRelease();
+    }
     public function getNextReleaseVersion(): string
     {
-        $version = $this->getLatestRelease();
+        if ($this->isSupportBranch()) {
+            $major = $this->parseMajorVersionFromBranch($this->getBranch());
+            $version = $this->getLatestReleaseFromMajor($major);
+            return $this->incrementMinorLevel($version);
+        }
+        if ($this->isHotfixBranch()) {
+            $major = $this->parseMajorVersionFromBranch($this->getBranch());
+            $version = $this->getLatestReleaseFromMajor($major);
+            return $this->incrementPatchLevel($version);
+        }
+
+        $version = $this->getLatestMainRelease();
         if ($version === null) {
             return $this->getBranchAliasVersion('dev-' . $this->branch) ?? '1.0.0';
         }
@@ -228,6 +239,16 @@ class Project
             $version = $branchAliasVersion;
         }
         return $version;
+    }
+
+    private function parseMajorVersionFromBranch(string $branch): int
+    {
+        $slashPos = strpos($branch, '/');
+        $firstDotPos = strpos($branch, '.', $slashPos);
+
+        $major = substr($branch, $slashPos + 1, $firstDotPos - $slashPos - 1);
+
+        return (int)$major;
     }
 
     /**
@@ -258,24 +279,6 @@ class Project
     private function getBranchAlias(string $aliasName): ?string
     {
         return $this->getPackage()->getExtra()['branch-alias'][$aliasName] ?? null;
-    }
-
-    public function getNextHotfixVersion(): ?string
-    {
-        $version = $this->getLatestRelease();
-        if ($version === null) {
-            return null;
-        }
-        return $this->incrementPatchLevel($version);
-    }
-
-    public function getNextSupportVersion(): ?string
-    {
-        $version = $this->getLatestRelease();
-        if ($version === null) {
-            return null;
-        }
-        return $this->incrementMinorLevel($version);
     }
 
     private function incrementMinorLevel(?string $version): ?string

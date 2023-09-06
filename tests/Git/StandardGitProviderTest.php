@@ -88,6 +88,18 @@ class StandardGitProviderTest extends TestCase
         $this->assertEquals(['1.0.0', '1.1.0', '2.0.0', '2.0.1'], $versions);
     }
 
+    public function testGetVersionsFromMajor(): void
+    {
+        $executor = new Executor(self::GIT_BASE);
+        $git = new StandardGitProvider($executor);
+
+        $executor->exec('git checkout main');
+
+        $versions = $git->getVersionsFromMajor(1);
+
+        $this->assertEquals(['1.0.0', '1.1.0'], $versions);
+    }
+
     public function testIsDev(): void
     {
         $executor = new Executor(self::GIT_BASE);

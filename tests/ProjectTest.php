@@ -155,7 +155,7 @@ class ProjectTest extends TestCase
         $this->assertTrue($project->hasBranch('support/1.x'));
     }
 
-    public function testGetReleaseVersionInMainBranch(): void
+    public function testGetNextReleaseVersionInMainBranch(): void
     {
         $rootPackage = $this->getMockBuilder(RootPackageInterface::class)->getMock();
         $rootPackage->method('getName')->willReturn('sitepark/foo');
@@ -170,10 +170,10 @@ class ProjectTest extends TestCase
         /** @var GitProvider $git */
 
         $project = new Project($rootPackage, $git);
-        $this->assertEquals("1.2.0", $project->getReleaseVersion());
+        $this->assertEquals("1.2.0", $project->getNextReleaseVersion());
     }
 
-    public function testGetReleaseVersionInSupportBranch(): void
+    public function testGetNextReleaseVersionInSupportBranch(): void
     {
         $rootPackage = $this->getMockBuilder(RootPackageInterface::class)->getMock();
         $rootPackage->method('getName')->willReturn('sitepark/foo');
@@ -181,18 +181,18 @@ class ProjectTest extends TestCase
 
         $git = $this->getMockBuilder(GitProvider::class)->getMock();
         $git->method('getCurrentBranch')->willReturn('support/2.x');
-        $git->method('getVersions')->willReturn([
+        $git->method('getVersionsFromMajor')->willReturn([
             '2.0.0',
             '2.0.1',
-            '2.1.0'
+            '2.1.0',
         ]);
         /** @var GitProvider $git */
 
         $project = new Project($rootPackage, $git);
-        $this->assertEquals("2.2.0", $project->getReleaseVersion());
+        $this->assertEquals("2.2.0", $project->getNextReleaseVersion());
     }
 
-    public function testGetReleaseVersionInHotfixBranch(): void
+    public function testGetNextReleaseVersionInHotfixBranch(): void
     {
         $rootPackage = $this->getMockBuilder(RootPackageInterface::class)->getMock();
         $rootPackage->method('getName')->willReturn('sitepark/foo');
@@ -200,7 +200,7 @@ class ProjectTest extends TestCase
 
         $git = $this->getMockBuilder(GitProvider::class)->getMock();
         $git->method('getCurrentBranch')->willReturn('hotfix/1.1.x');
-        $git->method('getVersions')->willReturn([
+        $git->method('getVersionsFromMajor')->willReturn([
             '1.1.0',
             '1.1.1',
             '1.1.2'
@@ -208,7 +208,7 @@ class ProjectTest extends TestCase
         /** @var GitProvider $git */
 
         $project = new Project($rootPackage, $git);
-        $this->assertEquals("1.1.3", $project->getReleaseVersion());
+        $this->assertEquals("1.1.3", $project->getNextReleaseVersion());
     }
 
     public function testGetVersionHotfix(): void
@@ -238,7 +238,7 @@ class ProjectTest extends TestCase
         $git = $this->getMockBuilder(GitProvider::class)->getMock();
         $git->method('isDev')->willReturn(true);
         $git->method('getCurrentBranch')->willReturn('support/1.x');
-        $git->method('getVersions')->willReturn([
+        $git->method('getVersionsFromMajor')->willReturn([
             '1.0.0',
             '1.1.0',
             '1.2.0'

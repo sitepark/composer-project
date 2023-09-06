@@ -25,7 +25,7 @@ class ReleaseVersionCommandTest extends TestCase
 
         $command = new ReleaseVersionCommand();
         $project = $this->createStub(Project::class);
-        $project->method('getReleaseVersion')->willReturn('1.0.0');
+        $project->method('getNextReleaseVersion')->willReturn('1.0.0');
 
         $command->setProject($project);
 

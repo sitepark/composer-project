@@ -52,13 +52,16 @@ class StandardGitProvider implements GitProvider
     public function getVersions(): array
     {
         $this->updateTags();
-        // Wenn HEAD auf einen TAG zeigt
-        $versions = $this->executor->exec('git tag -l --points-at HEAD');
-        if (empty($versions)) {
-            // Wenn HEAD develop ist
-            $versions = $this->executor->exec('git --no-pager tag --sort=v:refname');
-        }
-        return $versions;
+        return $this->executor->exec('git tag -l --sort=v:refname \'[0-9]*.[0-9]*.[0-9]*\'');
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getVersionsFromMajor(int $major): array
+    {
+        $this->updateTags();
+        return $this->executor->exec('git tag -l --sort=v:refname \'' . $major . '.[0-9]*.[0-9]*\'');
     }
 
     public function isDev(): bool

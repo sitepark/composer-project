@@ -21,7 +21,7 @@ class ReleaseVersionCommand extends BaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $releaseVersion = $this->getProject()->getReleaseVersion();
+        $releaseVersion = $this->getProject()->getNextReleaseVersion();
         echo $releaseVersion . "\n";
         return 0;
     }

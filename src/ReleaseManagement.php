@@ -58,14 +58,11 @@ class ReleaseManagement
                 $this->project->getBranch()
             );
         }
-        $releaseVersion = $this->project->getLatestRelease();
+        $releaseVersion = $this->project->getLatestMainRelease();
         if ($releaseVersion === null) {
             throw new \RuntimeException('There is no release yet for which a hotfix can be created.');
         }
-        $hotfixVersion = $this->project->getNextHotfixVersion();
-        if ($hotfixVersion === null) {
-            throw new \RuntimeException('Hotfix version could not be determined.');
-        }
+        $hotfixVersion = $this->project->getNextReleaseVersion();
         [$major, $minor] = explode('.', $hotfixVersion);
         $hotfixBranch = 'hotfix/' . $major . '.' . $minor . '.x';
         $this->executor->exec('git checkout -b ' . $hotfixBranch . ' ' . $releaseVersion);
@@ -85,11 +82,7 @@ class ReleaseManagement
             throw new \RuntimeException("No release can be created with branch '" . $this->project->getBranch() . "'.");
         }
 
-        if ($this->project->isHotfixBranch()) {
-            $releaseVersion = $this->project->getNextHotfixVersion();
-        } else {
-            $releaseVersion = $this->project->getNextReleaseVersion();
-        }
+        $releaseVersion = $this->project->getNextReleaseVersion();
 
         $this->assertNoUncommittedChanges('The release can only be created when all changes are committed.');
 
