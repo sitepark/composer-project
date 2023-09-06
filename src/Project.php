@@ -143,6 +143,14 @@ class Project
     /**
      * @return string[]
      */
+    public function getVersionsFromMinor(int $major, int $minor): array
+    {
+        return $this->gitProvider->getVersionsFromMinor($major, $minor);
+    }
+
+    /**
+     * @return string[]
+     */
     public function getVersionsFromMajor(int $major): array
     {
         return $this->gitProvider->getVersionsFromMajor($major);
