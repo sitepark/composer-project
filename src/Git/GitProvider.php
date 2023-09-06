@@ -20,6 +20,11 @@ interface GitProvider
      */
     public function getVersions(): array;
 
+    /**
+     * @return string[]
+     */
+    public function getVersionsFromMajor(int $major): array;
+
     public function isDev(): bool;
 
     public function isRelease(): bool;

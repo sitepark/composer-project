@@ -26,8 +26,7 @@ class VersionCommand extends BaseCommand
         if ($project->isDev()) {
             echo 'dev-' . $project->getBranch() . "\n";
         } else {
-            echo $project->getReleaseVersion() . "\n";
-            ;
+            echo $project->getLatestReleaseVersion() . "\n";
         }
 
         return 0;
