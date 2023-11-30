@@ -14,7 +14,7 @@
 		"source": "https://github.com/sitepark/composer-project/"
 	},
 	"require": {
-		"php": ">=8.0 <8.3",
+		"php": ">=8.0 <8.5",
 		"ext-json": "*",
 		"composer-plugin-api": "^2.0",
 		"symfony/console": "^6.0"
