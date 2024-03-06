@@ -78,7 +78,7 @@ class Project
             return $this->getNextReleaseVersion();
         }
 
-        return $this->getLatestMainRelease();
+        return $this->getLatestReleaseVersion();
     }
 
     public function isMainBranch(): bool
@@ -222,11 +222,11 @@ class Project
 
     public function getLatestReleaseVersion(): ?string
     {
-        if ($this->isSupportBranch() || $this->isHotfixBranch()) {
+        if ($this->isSupportBranch()) {
             [$major]= $this->parseVersionFromBranch($this->getBranch());
             return $this->getLatestReleaseFromMajor((int)$major);
         }
-        if ($this->isSupportBranch() || $this->isHotfixBranch()) {
+        if ($this->isHotfixBranch()) {
             [$major, $minor]= $this->parseVersionFromBranch($this->getBranch());
             return $this->getLatestReleaseFromMinor((int)$major, (int)$minor);
         }
