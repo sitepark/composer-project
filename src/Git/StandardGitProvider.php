@@ -39,9 +39,9 @@ class StandardGitProvider implements GitProvider
     public function updateTags(): void
     {
         /**
-         * Beim Laden des Projektes werden nun die neusten Tags vom Git Remote geladen.
-         * Damit wird sichergestellt, dass beim ermitteln der nächsten Hotfix-Version
-         * alle nötigen Informationen im lokalen Repository vorhanden sind.
+         * When loading the project, the latest tags are now loaded from the Git remote.
+         * This ensures that when determining the next hotfix version
+         * all necessary information is available in the local repository.
          */
         $this->executor->exec('git fetch --tags');
     }
