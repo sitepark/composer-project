@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SP\Composer\Project;
 
+use Composer\InstalledVersions;
 use Composer\Package\RootPackageInterface;
 use Composer\Semver\Comparator;
 use Composer\Semver\VersionParser;
@@ -200,20 +201,15 @@ class Project
     public function getUnstableDependencies(array $excludes = []): array
     {
 
-        // TODO: Also check entries from the lock file?
-        // composer show --locked -D -f json
-
-        /* @var $allRequires \Composer\Package\Link[] */
-        $allRequires = array_merge(
-            $this->package->getRequires(),
-            $this->package->getDevRequires()
-        );
-
         $unstable = [];
-        foreach ($allRequires as $req) {
-            $stability = VersionParser::parseStability($req->getPrettyConstraint());
-            if ($stability !== 'stable' && !in_array($req->getTarget(), $excludes, true)) {
-                $unstable[] = $req->getTarget() . ':' . $req->getPrettyConstraint();
+        foreach (InstalledVersions::getInstalledPackages() as $package) {
+            if ($package === $this->package->getName()) {
+                continue;
+            }
+            $version = InstalledVersions::getVersion($package);
+            $stability = VersionParser::parseStability($version);
+            if ($stability !== 'stable' && !in_array($package, $excludes, true)) {
+                $unstable[] = $package . ':' . $version;
             }
         }
 
@@ -223,11 +219,11 @@ class Project
     public function getLatestReleaseVersion(): ?string
     {
         if ($this->isSupportBranch()) {
-            [$major]= $this->parseVersionFromBranch($this->getBranch());
+            [$major] = $this->parseVersionFromBranch($this->getBranch());
             return $this->getLatestReleaseFromMajor((int)$major);
         }
         if ($this->isHotfixBranch()) {
-            [$major, $minor]= $this->parseVersionFromBranch($this->getBranch());
+            [$major, $minor] = $this->parseVersionFromBranch($this->getBranch());
             return $this->getLatestReleaseFromMinor((int)$major, (int)$minor);
         }
 

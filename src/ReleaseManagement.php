@@ -25,7 +25,12 @@ class ReleaseManagement
             'roave/security-advisories'
         ]);
         if (count($unstable) > 0) {
-            throw new \RuntimeException('There are unstable dependencies:' . "\n\n" . implode("\n", $unstable));
+            throw new \RuntimeException(
+                'There are unstable dependencies:' . "\n\n" .
+                implode("\n", $unstable) . "\n\n" .
+                "Show with:\n\n" .
+                "composer show"
+            );
         }
     }
 
