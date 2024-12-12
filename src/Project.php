@@ -22,10 +22,13 @@ class Project
 
     private GitProvider $gitProvider;
 
-    public function __construct(RootPackageInterface $package, GitProvider $gitProvider)
+    private Platform $platform;
+
+    public function __construct(RootPackageInterface $package, GitProvider $gitProvider, Platform $platform = null)
     {
         $this->gitProvider = $gitProvider;
         $this->package = $package;
+        $this->platform = $platform ?? new Platform();
         $this->load();
     }
 
@@ -202,11 +205,11 @@ class Project
     {
 
         $unstable = [];
-        foreach (InstalledVersions::getInstalledPackages() as $package) {
+        foreach ($this->platform->getInstalledPackages() as $package) {
             if ($package === $this->package->getName()) {
                 continue;
             }
-            $version = InstalledVersions::getVersion($package);
+            $version = $this->platform->getInstalledPackageVersion($package);
             $stability = VersionParser::parseStability($version);
             if ($stability !== 'stable' && !in_array($package, $excludes, true)) {
                 $unstable[] = $package . ':' . $version;

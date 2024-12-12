@@ -122,6 +122,10 @@ class ProjectTest extends TestCase
      */
     public function testGetUnstableDependencies(): void
     {
+        $platform = $this->createStub(Platform::class);
+        $platform->method('getInstalledPackages')->willReturn(['sitepark/bar']);
+        $platform->method('getInstalledPackageVersion')->willReturn('dev-develop');
+
         $package = $this->createStub(Link::class);
         $package->method('getPrettyConstraint')->willReturn('dev-develop');
         $package->method('getTarget')->willReturn('sitepark/bar');
@@ -134,7 +138,7 @@ class ProjectTest extends TestCase
         /** @var GitProvider $git */
         $git = $this->createStub(GitProvider::class);
 
-        $project = new Project($rootPackage, $git);
+        $project = new Project($rootPackage, $git, $platform);
         $this->assertEquals(['sitepark/bar:dev-develop'], $project->getUnstableDependencies());
     }
 
@@ -219,7 +223,7 @@ class ProjectTest extends TestCase
 
         $git = $this->getMockBuilder(GitProvider::class)->getMock();
         $git->method('getCurrentBranch')->willReturn('hotfix/1.1.x');
-        $git->method('getVersions')->willReturn([
+        $git->method('getVersionsFromMinor')->willReturn([
             '1.1.0',
             '1.1.1'
         ]);

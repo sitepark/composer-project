@@ -39,8 +39,6 @@ class VersionCommandTest extends TestCase
             'command' => 'project:version'
         ]);
 
-        echo "\ntest\n";
-
         $this->assertEquals(0, $success);
     }
 }
