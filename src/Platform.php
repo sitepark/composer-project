@@ -16,7 +16,7 @@ class Platform
         return InstalledVersions::getInstalledPackages();
     }
 
-    public function getInstalledPackageVersion(string $packageName): string
+    public function getInstalledPackageVersion(string $packageName): ?string
     {
         return InstalledVersions::getVersion($packageName);
     }
