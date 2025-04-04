@@ -3,6 +3,9 @@
 namespace SP\Composer\Project;
 
 use FilesystemIterator;
+use PHPUnit\Framework\Attributes\Before;
+use PHPUnit\Framework\Attributes\BeforeClass;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use RecursiveDirectoryIterator;
@@ -10,9 +13,7 @@ use RecursiveIteratorIterator;
 use RuntimeException;
 use SP\Composer\Project\Git\Executor;
 
-/**
- * @covers \SP\Composer\Project\ReleaseManagement
- */
+#[CoversClass(ReleaseManagement::class)]
 class ReleaseManagementTest extends TestCase
 {
     private const GIT_BASE = "var/test/ReleaseManagementTest/gitrepo";
@@ -21,9 +22,7 @@ class ReleaseManagementTest extends TestCase
 
     private const TEST_FILE = "var/test/ReleaseManagementTest/gitrepo/file.txt";
 
-    /**
-     * @beforeClass
-     */
+    #[BeforeClass]
     public static function initGitRepoDir(): void
     {
         self::rmdir(self::GIT_BASE);
@@ -64,17 +63,13 @@ class ReleaseManagementTest extends TestCase
         $executor->exec('git push origin');
     }
 
-    /**
-     * @before
-     */
+    #[Before]
     public static function restoreGitRepository(): void
     {
         $executor = new Executor(self::GIT_BASE);
         $executor->exec('git restore .');
     }
-        /**
-     * @throws Exception
-     */
+
     public function testConstruct(): void
     {
 
@@ -91,9 +86,6 @@ class ReleaseManagementTest extends TestCase
         $this->assertTrue($uncommitedChanges);
     }
 
-    /**
-     * @throws Exception
-     */
     public function testVerifyRelease(): void
     {
 
@@ -103,14 +95,9 @@ class ReleaseManagementTest extends TestCase
         $releaseManagement = new ReleaseManagement($project, $executor);
 
         $releaseManagement->verifyRelease();
-
-        // Exception not thrown
-        $this->assertTrue(true);
+        $this->expectNotToPerformAssertions();
     }
 
-    /**
-     * @throws Exception
-     */
     public function testVerifyReleaseWithUnstableDependencies(): void
     {
 
@@ -123,9 +110,6 @@ class ReleaseManagementTest extends TestCase
         $releaseManagement->verifyRelease();
     }
 
-    /**
-     * @throws Exception
-     */
     public function testStartHotfix(): void
     {
 
@@ -144,9 +128,6 @@ class ReleaseManagementTest extends TestCase
         $this->assertContains('hotfix/1.1.x', $branches);
     }
 
-    /**
-     * @throws Exception
-     */
     public function testRelease(): void
     {
 
@@ -175,7 +156,9 @@ class ReleaseManagementTest extends TestCase
             );
             $files = new RecursiveIteratorIterator($dirObj, RecursiveIteratorIterator::CHILD_FIRST);
             foreach ($files as $path) {
-                $path->isDir() && !$path->isLink() ? rmdir($path->getPathname()) : unlink($path->getPathname());
+                if ($path instanceof \SplFileInfo) {
+                    $path->isDir() && !$path->isLink() ? rmdir($path->getPathname()) : unlink($path->getPathname());
+                }
             }
             rmdir($dirPath);
         }

@@ -3,7 +3,12 @@
 	cacheResultFile="var/cache/phpunit.result.cache"
 	colors="true"
 	executionOrder="random"
-	bootstrap="vendor/autoload.php">
+	bootstrap="vendor/autoload.php"
+    displayDetailsOnTestsThatTriggerWarnings="true"
+    displayDetailsOnTestsThatTriggerNotices="true"
+    displayDetailsOnTestsThatTriggerErrors="true"
+    displayDetailsOnTestsThatTriggerDeprecations="true"
+>
   <coverage cacheDirectory="var/cache/phpunit.coverage.cache">
     <report>
 	    <html outputDirectory="var/log/clover"/>

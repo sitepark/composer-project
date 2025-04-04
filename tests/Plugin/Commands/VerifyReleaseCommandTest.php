@@ -3,15 +3,14 @@
 namespace SP\Composer\Project\Plugin\Commands;
 
 use Composer\Console\Application;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use SP\Composer\Project\ReleaseManagement;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Tester\CommandTester;
 
-/**
- * @covers \SP\Composer\Project\Plugin\Commands\VerifyReleaseCommand
- */
+#[CoversClass(VerifyReleaseCommand::class)]
 class VerifyReleaseCommandTest extends TestCase
 {
     public function testCommand(): void
