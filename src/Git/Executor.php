@@ -29,8 +29,8 @@ class Executor
 
         $proc = proc_open($command, $descriptorspec, $pipes, $this->workdir, $env);
         if (is_resource($proc)) {
-            $stdout = trim(stream_get_contents($pipes[1]));
-            $stderr = trim(stream_get_contents($pipes[2]));
+            $stdout = trim(stream_get_contents($pipes[1]) ?: "");
+            $stderr = trim(stream_get_contents($pipes[2]) ?: "");
             $exitCode = proc_close($proc);
             if ($exitCode !== 0) {
                 throw new \RuntimeException(

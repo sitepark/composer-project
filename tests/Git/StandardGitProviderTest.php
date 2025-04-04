@@ -165,7 +165,9 @@ class StandardGitProviderTest extends TestCase
             );
             $files = new RecursiveIteratorIterator($dirObj, RecursiveIteratorIterator::CHILD_FIRST);
             foreach ($files as $path) {
-                $path->isDir() && !$path->isLink() ? rmdir($path->getPathname()) : unlink($path->getPathname());
+                if ($path instanceof \SplFileInfo) {
+                    $path->isDir() && !$path->isLink() ? rmdir($path->getPathname()) : unlink($path->getPathname());
+                }
             }
             rmdir($dirPath);
         }

@@ -95,9 +95,7 @@ class ReleaseManagementTest extends TestCase
         $releaseManagement = new ReleaseManagement($project, $executor);
 
         $releaseManagement->verifyRelease();
-
-        // Exception not thrown
-        $this->assertTrue(true);
+        $this->expectNotToPerformAssertions();
     }
 
     public function testVerifyReleaseWithUnstableDependencies(): void
@@ -158,7 +156,9 @@ class ReleaseManagementTest extends TestCase
             );
             $files = new RecursiveIteratorIterator($dirObj, RecursiveIteratorIterator::CHILD_FIRST);
             foreach ($files as $path) {
-                $path->isDir() && !$path->isLink() ? rmdir($path->getPathname()) : unlink($path->getPathname());
+                if ($path instanceof \SplFileInfo) {
+                    $path->isDir() && !$path->isLink() ? rmdir($path->getPathname()) : unlink($path->getPathname());
+                }
             }
             rmdir($dirPath);
         }

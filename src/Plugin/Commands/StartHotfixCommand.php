@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SP\Composer\Project\Plugin\Commands;
 
 use Composer\Console\Input\InputArgument;
+use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -24,6 +25,9 @@ class StartHotfixCommand extends BaseCommand
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $tag = $input->getArgument('tag');
+        if (!is_string($tag)) {
+            throw new RuntimeException("Invalid tag");
+        }
         $version = $this->getReleaseManagement()->startHotfix($tag);
 
         $io = new SymfonyStyle($input, $output);

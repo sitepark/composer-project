@@ -93,6 +93,9 @@ class ReleaseManagement
         }
 
         $releaseVersion = $this->project->getNextReleaseVersion();
+        if ($releaseVersion === null) {
+            throw new \RuntimeException("Unable to determine release version");
+        }
 
         $this->assertNoUncommittedChanges('The release can only be created when all changes are committed.');
 

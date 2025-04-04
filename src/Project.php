@@ -76,7 +76,7 @@ class Project
         return $this->name;
     }
 
-    public function getVersion(): string
+    public function getVersion(): ?string
     {
         if ($this->isDev()) {
             return $this->getNextReleaseVersion();
@@ -210,6 +210,9 @@ class Project
                 continue;
             }
             $version = $this->platform->getInstalledPackageVersion($package);
+            if ($version === null) {
+                continue;
+            }
             $stability = VersionParser::parseStability($version);
             if ($stability !== 'stable' && !in_array($package, $excludes, true)) {
                 $unstable[] = $package . ':' . $version;
@@ -232,7 +235,7 @@ class Project
 
         return $this->getLatestMainRelease();
     }
-    public function getNextReleaseVersion(): string
+    public function getNextReleaseVersion(): ?string
     {
         if ($this->isSupportBranch()) {
             [$major] = $this->parseVersionFromBranch($this->getBranch());
@@ -255,7 +258,7 @@ class Project
         // determined based on Git tags, it will be taken.
         // This is necessary e.g. when releasing major versions.
         $branchAliasVersion = $this->getBranchAliasVersion('dev-' . $this->branch);
-        if ($branchAliasVersion !== null && Comparator::greaterThan($branchAliasVersion, $version)) {
+        if ($branchAliasVersion !== null && $version !== null && Comparator::greaterThan($branchAliasVersion, $version)) {
             $version = $branchAliasVersion;
         }
         return $version;
@@ -299,7 +302,17 @@ class Project
      */
     private function getBranchAlias(string $aliasName): ?string
     {
-        return $this->getPackage()->getExtra()['branch-alias'][$aliasName] ?? null;
+        $extra = $this->getPackage()->getExtra();
+        $branchAliases = $extra['branch-alias'] ?? null;
+        if (!is_array($branchAliases)) {
+            return null;
+        }
+
+        $alias = $branchAliases[$aliasName] ?? null;
+        if (is_string($alias)) {
+            return $alias;
+        }
+        return null;
     }
 
     private function incrementMinorLevel(?string $version): ?string
