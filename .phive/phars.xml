@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phive xmlns="https://phar.io/phive">
-  <phar name="composer-normalize" version="^2.15.0" installed="2.30.2" copy="false" location="./tools/composer-normalize"/>
-  <phar name="phpunit" version="^10.0" installed="10.1.2" location="./tools/phpunit.phar" copy="false"/>
-  <phar name="phpstan" version="^1.0" installed="1.10.12" copy="false" location="./tools/phpstan"/>
+  <phar name="composer-normalize" version="^2.15.0" installed="2.45.0" copy="false" location="./tools/composer-normalize"/>
+  <phar name="phpunit" version="^10.0" installed="10.5.45" location="./tools/phpunit.phar" copy="false"/>
+  <phar name="phpstan" version="^1.0" installed="1.12.23" copy="false" location="./tools/phpstan"/>
   <phar name="overtrue/phplint" version="^9.0.4" installed="9.0.4" location="./tools/phplint" copy="false"/>
 </phive>
