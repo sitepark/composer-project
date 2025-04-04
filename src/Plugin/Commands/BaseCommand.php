@@ -15,7 +15,7 @@ abstract class BaseCommand extends \Composer\Command\BaseCommand
 
     private ?ReleaseManagement $releaseManagement = null;
 
-    public function __construct(string $name = null)
+    public function __construct(?string $name = null)
     {
         parent::__construct($name);
     }

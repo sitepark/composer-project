@@ -24,7 +24,7 @@ class Project
 
     private Platform $platform;
 
-    public function __construct(RootPackageInterface $package, GitProvider $gitProvider, Platform $platform = null)
+    public function __construct(RootPackageInterface $package, GitProvider $gitProvider, ?Platform $platform = null)
     {
         $this->gitProvider = $gitProvider;
         $this->package = $package;
