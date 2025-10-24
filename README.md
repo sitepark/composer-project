@@ -35,3 +35,23 @@ After `composer-project` is installed, the following commands are available in t
 * `composer project:startHotfix` - Creates a hotfix branch of the form `hotfix/[MAJOR].[MINOR].x` based on the current checked out level, where this should be a tag level. the Current tag level should always be the latest patch level of a given minor version. This version is determined and based on this version the Hotifx branch is named.
 * `composer project:release` - Here the next release version of the current branch is determined and a tag of the form `[MAJOR].[MINOR].[PATCH]` is created. Releases can be created for the branches `main`, `support/[MAJOR].x` and `hotfix/[MAJOR].[MINOR].x`.
 
+
+### `project:verifyRelease`
+
+You can use `project:verifyRelease` to check whether the current branch is releasable. This checks whether all dependencies have been defined with a stable version.
+
+The stability of the versions is checked via `Composer\Semver\VersionParser:parseStability`. Possible values are: `dev`, `alpha`, `beta` `RC` or `stable`. The branch can only be released if all dependencies have been defined with the stability `stable`.
+
+In exceptional cases, it may be necessary to create a release even though dependencies have been defined with non-stable versions. For example, the following configuration can be set for the project in the `composer.json` file:
+
+```json
+{
+   "extra" : {
+        "verify-release" : {
+                "allowed-stabilities" : ["beta"]
+        }
+   }
+}
+```
+
+In this case, `beta` versions are also permitted. Several stability levels can be defined.
