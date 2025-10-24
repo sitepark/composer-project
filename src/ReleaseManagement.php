@@ -20,10 +20,16 @@ class ReleaseManagement
 
     public function verifyRelease(): void
     {
+
+        $allowedStability = array_merge(
+            ['stable'],
+            $this->project->getPackage()->getExtra()['verify-release']['allowed-stabilities'] ?? []
+        );
+
         $unstable = $this->project->getUnstableDependencies([
             // See: https://github.com/Roave/SecurityAdvisories#stability
             'roave/security-advisories'
-        ]);
+        ], $allowedStability);
         if (count($unstable) > 0) {
             throw new \RuntimeException(
                 'There are unstable dependencies:' . "\n\n" .

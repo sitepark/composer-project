@@ -199,10 +199,13 @@ class Project
 
     /**
      * @param string[] $excludes
+     * @param string[] $allowedStability
      * @return string[]
      */
-    public function getUnstableDependencies(array $excludes = []): array
-    {
+    public function getUnstableDependencies(
+        array $excludes = [],
+        array $allowedStability = ['stable']
+    ): array {
 
         $unstable = [];
         foreach ($this->platform->getInstalledPackages() as $package) {
@@ -211,7 +214,7 @@ class Project
             }
             $version = $this->platform->getInstalledPackageVersion($package);
             $stability = VersionParser::parseStability($version);
-            if ($stability !== 'stable' && !in_array($package, $excludes, true)) {
+            if (!in_array($stability, $allowedStability, true) && !in_array($package, $excludes, true)) {
                 $unstable[] = $package . ':' . $version;
             }
         }
