@@ -42,6 +42,14 @@ You can use `project:verifyRelease` to check whether the current branch is relea
 
 The stability of the versions is checked via `Composer\Semver\VersionParser:parseStability`. Possible values are: `dev`, `alpha`, `beta` `RC` or `stable`. The branch can only be released if all dependencies have been defined with the stability `stable`.
 
+Use
+
+```sh
+composer show
+```
+
+To display all dependencies and their versions.
+
 In exceptional cases, it may be necessary to create a release even though dependencies have been defined with non-stable versions. For example, the following configuration can be set for the project in the `composer.json` file:
 
 ```json
