@@ -48,7 +48,7 @@ class ReleaseManagement
 
     /**
      * Checks whether the current working tree contains
-     * uncommited changes. If it does, an Exception is thrown
+     * uncommitted changes. If it does, an Exception is thrown
      *
      *  @param string $msg Message of the Exception that may be thrown
      */
