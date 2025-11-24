@@ -50,16 +50,39 @@ composer show
 
 To display all dependencies and their versions.
 
+## Configuration
+
+### `allowed-stabilities`
+
+**default-value:** `["stable"]`
+
 In exceptional cases, it may be necessary to create a release even though dependencies have been defined with non-stable versions. For example, the following configuration can be set for the project in the `composer.json` file:
 
 ```json
 {
-   "extra" : {
-        "verify-release" : {
-                "allowed-stabilities" : ["beta"]
-        }
-   }
+  "extra" : {
+    "verify-release" : {
+      "allowed-stabilities" : ["beta"]
+    }
+  }
 }
 ```
-
 In this case, `beta` versions are also permitted. Several stability levels can be defined.
+
+
+### `ignored`
+
+**default-value:** `["roave/security-advisories"]`
+
+It's also possible to declare dependencies which should be generally ignored when verifying dependencies:
+
+
+```json
+{
+  "extra" : {
+    "verify-release" : {
+      "ignored" : ["roave/security-advisories", "phpcompatibility/php-compatibility"]
+    }
+  }
+}
+```
