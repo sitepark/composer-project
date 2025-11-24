@@ -26,10 +26,12 @@ class ReleaseManagement
             $this->project->getPackage()->getExtra()['verify-release']['allowed-stabilities'] ?? []
         );
 
-        $unstable = $this->project->getUnstableDependencies([
-            // See: https://github.com/Roave/SecurityAdvisories#stability
-            'roave/security-advisories'
-        ], $allowedStability);
+        $ignored = array_merge(
+            ['roave/security-advisories'],
+            $this->project->getPackage()->getExtra()['verify-release']['ignored'] ?? []
+        );
+
+        $unstable = $this->project->getUnstableDependencies($ignored, $allowedStability);
         if (count($unstable) > 0) {
             throw new \RuntimeException(
                 'There are unstable dependencies:' . "\n\n" .
