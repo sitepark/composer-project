@@ -58,7 +58,7 @@ class ProjectTest extends TestCase
         $git->method('getCurrentBranch')->willReturn("feature/my-feature");
 
         $project = new Project($rootPackage, $git);
-        $this->assertEquals("my-feature-SNAPSHOT", $project->getVersionQualifier());
+        $this->assertEquals("my_feature-SNAPSHOT", $project->getVersionQualifier());
     }
 
     public function testGetBranch(): void
@@ -105,7 +105,7 @@ class ProjectTest extends TestCase
         $this->assertEquals(['sitepark/bar:dev-develop'], $project->getUnstableDependencies());
     }
 
-    public function testHasBranche(): void
+    public function testHasBranch(): void
     {
         $rootPackage = $this->createStub(RootPackageInterface::class);
         $rootPackage->method('getName')->willReturn('sitepark/foo');

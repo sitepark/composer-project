@@ -108,7 +108,7 @@ class Project
         $qualifier = [];
         $featureBranchName = $this->getFeatureBranchName();
         if (!empty($featureBranchName)) {
-            $qualifier[] = $featureBranchName;
+            $qualifier[] = Version::escapeVersionIdentifierForMaven($featureBranchName);
         }
         if ($this->isDev()) {
             $qualifier[] = 'SNAPSHOT';
