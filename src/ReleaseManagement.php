@@ -82,7 +82,7 @@ class ReleaseManagement
 
         $hotfixBranch = 'hotfix/' . $major . '.' . $minor . '.x';
         $this->executor->exec('git checkout -b ' . $hotfixBranch . ' ' . $lastReleaseVersion);
-        $this->executor->exec('git push origin ' . $hotfixBranch);
+        $this->executor->exec('git ' . $hotfixBranch);
 
         [$major, $minor, $patch] = explode('.', $lastReleaseVersion);
 
