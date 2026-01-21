@@ -26,12 +26,10 @@ class ReleaseManagement
             $this->project->getPackage()->getExtra()['verify-release']['allowed-stabilities'] ?? []
         );
 
-        $ignored = array_merge(
-            ['roave/security-advisories'],
-            $this->project->getPackage()->getExtra()['verify-release']['ignored'] ?? []
-        );
-
-        $unstable = $this->project->getUnstableDependencies($ignored, $allowedStability);
+        $unstable = $this->project->getUnstableDependencies([
+            // See: https://github.com/Roave/SecurityAdvisories#stability
+            'roave/security-advisories'
+        ], $allowedStability);
         if (count($unstable) > 0) {
             throw new \RuntimeException(
                 'There are unstable dependencies:' . "\n\n" .
@@ -50,7 +48,7 @@ class ReleaseManagement
 
     /**
      * Checks whether the current working tree contains
-     * uncommitted changes. If it does, an Exception is thrown
+     * uncommited changes. If it does, an Exception is thrown
      *
      *  @param string $msg Message of the Exception that may be thrown
      */
@@ -82,7 +80,7 @@ class ReleaseManagement
 
         $hotfixBranch = 'hotfix/' . $major . '.' . $minor . '.x';
         $this->executor->exec('git checkout -b ' . $hotfixBranch . ' ' . $lastReleaseVersion);
-        $this->executor->exec('git ' . $hotfixBranch);
+        $this->executor->exec('git push');
 
         [$major, $minor, $patch] = explode('.', $lastReleaseVersion);
 
