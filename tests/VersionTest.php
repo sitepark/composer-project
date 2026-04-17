@@ -3,7 +3,7 @@
 namespace SP\Composer\Project;
 
 use PHPUnit\Framework\TestCase;
-use PHPUnit\Metadata\CoversClass;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(Version::class)]
 class VersionTest extends TestCase

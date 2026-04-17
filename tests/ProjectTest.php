@@ -88,16 +88,15 @@ class ProjectTest extends TestCase
     public function testGetUnstableDependencies(): void
     {
         $platform = $this->createStub(Platform::class);
-        $platform->method('getInstalledPackages')->willReturn(['sitepark/bar']);
         $platform->method('getInstalledPackageVersion')->willReturn('dev-develop');
 
         $package = $this->createStub(Link::class);
-        $package->method('getPrettyConstraint')->willReturn('dev-develop');
         $package->method('getTarget')->willReturn('sitepark/bar');
 
         $rootPackage = $this->createStub(RootPackageInterface::class);
         $rootPackage->method('getName')->willReturn('sitepark/foo');
         $rootPackage->method('getRequires')->willReturn([$package]);
+        $rootPackage->method('getDevRequires')->willReturn([]);
 
         $git = $this->createStub(GitProvider::class);
 

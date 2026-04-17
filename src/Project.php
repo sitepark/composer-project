@@ -208,10 +208,12 @@ class Project
     ): array {
 
         $unstable = [];
-        foreach ($this->platform->getInstalledPackages() as $package) {
-            if ($package === $this->package->getName()) {
-                continue;
-            }
+        $directDependencies = array_merge(
+            $this->package->getRequires(),
+            $this->package->getDevRequires()
+        );
+        foreach ($directDependencies as $link) {
+            $package = $link->getTarget();
             $version = $this->platform->getInstalledPackageVersion($package);
             if ($version === null) {
                 continue;

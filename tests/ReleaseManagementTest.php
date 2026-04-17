@@ -81,9 +81,9 @@ class ReleaseManagementTest extends TestCase
 
         file_put_contents(self::TEST_FILE, 'a-z');
 
-        $uncommitedChanges = $releaseManagement->hasUncommittedChanges();
+        $uncommittedChanges = $releaseManagement->hasUncommittedChanges();
 
-        $this->assertTrue($uncommitedChanges);
+        $this->assertTrue($uncommittedChanges);
     }
 
     public function testVerifyRelease(): void

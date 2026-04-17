@@ -12,9 +12,9 @@ final class Version
         $leadingUnderscoreRegex = '/(^_+)/';
         $trailingUnderscoreRegex = '/(_+$)/';
 
-        $escape = preg_replace($invalidCharsRegex, '_', $identifier);
-        $escape = preg_replace($leadingUnderscoreRegex, '', $escape);
-        $escape = preg_replace($trailingUnderscoreRegex, '', $escape);
+        $escape = preg_replace($invalidCharsRegex, '_', $identifier) ?? $identifier;
+        $escape = preg_replace($leadingUnderscoreRegex, '', $escape) ?? $escape;
+        $escape = preg_replace($trailingUnderscoreRegex, '', $escape) ?? $escape;
 
         return trim($escape);
     }
