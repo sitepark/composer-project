@@ -6,6 +6,12 @@ namespace SP\Composer\Project;
 
 use SP\Composer\Project\Git\Executor;
 
+/**
+ * @phpstan-type VerifyReleaseConfig array{
+ *     allowed-stabilities?: list<string>,
+ *     ignored?: list<string>
+ * }
+ */
 class ReleaseManagement
 {
     private Project $project;
@@ -20,16 +26,10 @@ class ReleaseManagement
 
     public function verifyRelease(): void
     {
+        $config = $this->getVerifyReleaseConfig();
 
-        $allowedStability = array_merge(
-            ['stable'],
-            $this->project->getPackage()->getExtra()['verify-release']['allowed-stabilities'] ?? []
-        );
-
-        $ignored = array_merge(
-            ['roave/security-advisories'],
-            $this->project->getPackage()->getExtra()['verify-release']['ignored'] ?? []
-        );
+        $allowedStability = array_merge(['stable'], $config['allowed-stabilities'] ?? []);
+        $ignored = array_merge(['roave/security-advisories'], $config['ignored'] ?? []);
 
         $unstable = $this->project->getUnstableDependencies($ignored, $allowedStability);
         if (count($unstable) > 0) {
@@ -111,5 +111,23 @@ class ReleaseManagement
         $this->executor->exec('git push origin ' . $releaseVersion);
 
         return $releaseVersion;
+    }
+
+    /**
+     * @return VerifyReleaseConfig
+     */
+    private function getVerifyReleaseConfig(): array
+    {
+        $config = $this->project->getPackage()->getExtra()['verify-release'] ?? null;
+        if (!is_array($config)) {
+            return [];
+        }
+
+        $toStrArray = fn($val) => array_values(array_filter(is_array($val) ? $val : [], 'is_string'));
+
+        return [
+            'allowed-stabilities' => $toStrArray($config['allowed-stabilities'] ?? []),
+            'ignored' => $toStrArray($config['allowed-stabilities'] ?? []),
+        ];
     }
 }
