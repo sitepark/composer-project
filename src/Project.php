@@ -212,8 +212,13 @@ class Project
             $this->package->getRequires(),
             $this->package->getDevRequires()
         );
+        $installedPackages = $this->platform->getInstalledPackages();
         foreach ($directDependencies as $link) {
             $package = $link->getTarget();
+            // dependency is not "installed" - for example php or ext-sqlite
+            if (!in_array($package, $installedPackages)) {
+                continue;
+            }
             $version = $this->platform->getInstalledPackageVersion($package);
             if ($version === null) {
                 continue;
