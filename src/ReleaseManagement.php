@@ -127,7 +127,7 @@ class ReleaseManagement
 
         return [
             'allowed-stabilities' => $toStrArray($config['allowed-stabilities'] ?? []),
-            'ignored' => $toStrArray($config['allowed-stabilities'] ?? []),
+            'ignored' => $toStrArray($config['ignored'] ?? []),
         ];
     }
 }
